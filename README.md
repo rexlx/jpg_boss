@@ -4,7 +4,7 @@ organize photos by year with python
 works on windows *(tested with python 3.7.2)* and linux *(tested on fedora python 2.7.15 and 3.7.3)* not tested on mac.
 
 **ON LINUX**
-```$ $ python jpg_boss.py -t -s /home/rxlx/Pictures/ -d /home/rxlx/Mstor/Pictures/ -b /home/rxlx/Mstor/Pictures/loose/```
+```$ python jpg_boss.py -t -s /home/rxlx/Pictures/ -d /home/rxlx/Mstor/Pictures/ -b /home/rxlx/Mstor/Pictures/loose/```
 
 **ON WINDOWS**
 ```E:\bin\scripts>python jpg_boss.py -t -s "E:\TEMP\src\\" -d "E:\TEMP\dst\\" -b "E:\Pictures\loose\\"```
