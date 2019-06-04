@@ -1,5 +1,7 @@
 # jpg_boss
-organize photos by year with python
+organize photos by year with python. requires the pillow module. to install:
+
+```$ python -m pip install pillow```
 
 works on windows *(tested with python 3.7.2)* and linux *(tested on fedora python 2.7.15 and 3.7.3)* not tested on mac.
 
