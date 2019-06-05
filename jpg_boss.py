@@ -138,7 +138,6 @@ def move_mp4s(files, vdir, test):
                 # concat that to the target path to get our new file
                 video = os.path.join(target, thefile)
                 # see if the target dir already exists or make it
-                dir_checker(target)
                 # if user is doing a dry run
                 if test:
                     with open(test_file, 'a') as tfile:
@@ -147,6 +146,7 @@ def move_mp4s(files, vdir, test):
                         else:
                             tfile.write('moving ' + i + ' to ' + target + '\n')
                 else:
+                    dir_checker(target)
                     print('moving ' + i + ' to ' + target)
                     # move and remove
                     shutil.copy2(i, target)
@@ -188,7 +188,6 @@ def move_by_data(files, test, dest, bdir, logfile):
             # extract just the file from the src oath
             thefile = os.path.basename(i)
             # add that file name to the target dir
-            dir_checker(target)
             photo = os.path.join(target, thefile)
             # if user is doing a dry run
             if test:
@@ -202,6 +201,7 @@ def move_by_data(files, test, dest, bdir, logfile):
                     else:
                         tfile.write('moving ' + i + ' to ' + target + '\n')
             else:
+                dir_checker(target)
                 # if the file exists, do nothing
                 try:
                     if os.path.isfile(photo):
