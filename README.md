@@ -28,7 +28,7 @@ optional arguments:
 # Command Examples
 1. dry run(-t) with source(-s), destination(-d), and bastard directory(-b) arguments. The bastard directory is for jpgs that do not have metadata and cannot therefore be organized. It will create the target directories if they dont exist and further organize the photos by month. All source files will be removed in this example. Simply remove the -t to run for real.<br/><br/>
 
-**ON LINUX**
+**ON LINUX**<br/>
 ```$ python jpg_boss.py -t -s /home/rxlx/Pictures/ -d /home/rxlx/Mstor/Pictures/ -b /home/rxlx/Mstor/Pictures/loose/```
 
 **ON WINDOWS** (on windows the paths can get kind of tricky, i suggest always doing a dry run first :) )<br/>
