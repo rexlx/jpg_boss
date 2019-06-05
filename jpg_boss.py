@@ -1,13 +1,13 @@
 from __future__ import print_function
-import os, re, time, shutil, argparse, platform
+import os, re, time, shutil, argparse, platform, calendar
 import PIL.Image as img
 
 # --USER--VARIABLES-- #
 home = os.path.expanduser("~")
 user_vdir = os.path.join(home, 'Videos')
-user_bdir = os.path.join(home, 'loose')
 user_source = os.path.join(home, 'Pictures')
-user_dest = os.path.join(home, 'Camera')
+user_bdir = os.path.join(user_source, 'loose')
+user_dest = os.path.join(user_source, 'Phone')
 test_file = 'jpg_boss_dryrun.txt'
 # --USER--VARIABLES-- #
 
@@ -31,6 +31,12 @@ def get_args():
     parser.add_argument('-v', dest='vdir', required=False,
                         help="dir to store videos in")
     parser.add_argument('-l', dest='logfile', required=False)
+    parser.add_argument('-n', dest='nomonth', required=False,
+                        action="store_true",
+                        help="do not make directories for months")
+    parser.add_argument('-k', dest='keep_files', required=False,
+                        action="store_true",
+                        help="dont remove files from source dir")
     args = parser.parse_args()
     if args.test:
         test = True
@@ -56,7 +62,28 @@ def get_args():
         logfile = args.logfile
     else:
         logfile = 'jpg_boss.log'
-    return test, source, bdir, vdir, dest, logfile
+    if args.nomonth:
+        nomonth = True
+    else:
+        nomonth = False
+    if args.keep_files:
+        keep_files = True
+    else:
+        keep_files = False
+    return test, source, bdir, vdir, dest, logfile, nomonth, keep_files
+
+
+def handle_logs(test_file, logfile):
+    """
+    removes the dry run log and error log
+    """
+    try:
+        os.remove(test_file)
+        os.remove(logfile)
+    except Exception as e:
+        # exception is likely file does not exist, we dont care
+        error = e
+        return error
 
 
 def get_files(source):
@@ -78,10 +105,13 @@ def dir_checker(target):
     if not, make it and notify user
     """
     try:
+        # create the path if it doesnt exist
         if not os.path.exists(target):
             os.makedirs(target)
             print('Created ' + str(target))
     except Exception as e:
+        # likely exception is permission related, this should be run as
+        # a regular user in a place they have access to.
         print(target, e)
 
 
@@ -119,7 +149,7 @@ def count_media(files):
     print('\n')
 
 
-def move_mp4s(files, vdir, test):
+def move_mp4s(files, vdir, test, keep_files):
     """
     looks for mp4s and moves them to a target dir. currently, this
     assumes the date is in the title of the mp4, but this obviously
@@ -150,10 +180,11 @@ def move_mp4s(files, vdir, test):
                     print('moving ' + i + ' to ' + target)
                     # move and remove
                     shutil.copy2(i, target)
-                    os.remove(i)
+                    if not keep_files:
+                        os.remove(i)
 
 
-def move_by_data(files, test, dest, bdir, logfile):
+def move_by_data(files, test, dest, bdir, logfile, nomonth, keep_files):
     """
     if the file is a jpg, attempt to view exif data and get the date
     move and remove to target dir. writes exceptions to a log file
@@ -161,6 +192,7 @@ def move_by_data(files, test, dest, bdir, logfile):
     """
     # get the OS
     operating_system = platform.platform().lower().split('-')[0]
+    months = {k: v for k, v in enumerate(calendar.month_abbr)}
     for i in files:
         if i.lower().endswith('jpg'):
             # if its a jpg, open it. This should not decode
@@ -177,7 +209,14 @@ def move_by_data(files, test, dest, bdir, logfile):
                 target = bdir
             try:
                 # try to get the date out of the exif data
-                pdate = pic_meta_data[306][0:4]
+                date = pic_meta_data[306]
+                # date is in this format: '2016:09:27 17:48:17'
+                year = date[0:4]
+                pdate = year
+                if not nomonth:
+                    month_int = int(date[5:7])
+                    month = months[month_int]
+                    pdate = os.path.join(year, month)
                 # build the target location
                 target = os.path.join(dest, pdate)
             except Exception as e:
@@ -211,7 +250,8 @@ def move_by_data(files, test, dest, bdir, logfile):
                 else:
                     # move and remove
                     shutil.copy2(i, target)
-                    os.remove(i)
+                    if not keep_files:
+                        os.remove(i)
     if test:
         # tell the user where the dry run results are
         print('dry run results in: ' + test_file)
@@ -221,20 +261,15 @@ def main():
     # mark the start time
     start = time.time()
     # get the args
-    test, source, bdir, vdir, dest, logfile = get_args()
+    test, source, bdir, vdir, dest, logfile, nomonth, keep_files = get_args()
     # get the file list
     files = get_files(source)
     # handle the dry run log
-    if test:
-        try:
-            os.remove(test_file)
-        except Exception as e:
-            # exception is likely file does not exist, we dont care
-            okay = e
+    handle_logs(test_file, logfile)
     # move jpgs
-    move_by_data(files, test, dest, bdir, logfile)
+    move_by_data(files, test, dest, bdir, logfile, nomonth, keep_files)
     # move mp4s
-    move_mp4s(files, vdir, test)
+    move_mp4s(files, vdir, test, keep_files)
     # count file extensions
     count_media(files)
     # script is done, mark the time
