@@ -53,39 +53,3 @@ test_file = 'jpg_boss_dryrun.txt'
 ```
 
 **DONT** modify the variable names, just their values. options -tkn will still work as intended, now you just dont need -sdbv
-
-# System Impacts
-are minimal, here are some real world cases:
-```
-results of moving about 15.5 GiB around using this tool in various scenarios
-
-HDD on linux: (same disk for source and dest)
---------------------------------------------------------------------------------
-found 3858 jpgs, 2 pngs, 0 mp4s, and the following other types:
-13 .jpeg 1 .gif 7 .dng
-
-took 315.18 seconds
-
-SDD on linux: (same disk for source and dest)
---------------------------------------------------------------------------------
-found 3858 jpgs, 2 pngs, 0 mp4s, and the following other types:
-13 .jpeg 1 .gif 7 .dng
-
-took 104.04 seconds
-
-
-SSD on windows: (same disk for source and dest)
---------------------------------------------------------------------------------
-found 3858 jpgs, 2 pngs, 0 mp4s, and the following other types:
-1 .gif 13 .jpeg 7 .dng
-
-took 125.79 seconds
-
-SSD as source to usb3 flash drive as destination on windows (with keep files at
-source option)
---------------------------------------------------------------------------------
-found 3858 jpgs, 2 pngs, 0 mp4s, and the following other types:
-1 .gif 7 .dng 13 .jpeg
-
-took 572.86 seconds
-```
